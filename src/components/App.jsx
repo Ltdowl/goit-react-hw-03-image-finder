@@ -1,6 +1,6 @@
 import { Component } from 'react';
 import { Grid } from 'react-loader-spinner';
-import { ServiceAPI } from './API/API';
+import { ServiceAPI } from '../API';
 import { ImageGallery } from './ImageGallery/ImageGallery';
 import s from './ImageGallery/ImageGallery.module.css';
 import { Searchbar } from './Searchbar/Searchbar';
@@ -10,12 +10,12 @@ import { Modal } from './Modal/Modal';
 export class App extends Component {
   state = {
     query: '',
-    data: [],
+    data: {},
     page: 1,
     error: null,
     status: 'idle',
     showModal: false,
-    imgId: null,
+    pickedPicture: null,
     total: 0,
   };
 
@@ -86,17 +86,12 @@ export class App extends Component {
     this.setState(({ showModal }) => ({ showModal: !showModal }));
   };
 
-  clickOnImage = id => {
-    this.setState({ imgId: id });
-    this.toggleModal();
-  };
-
-  handleData = () => {
-    return this.state.data.find(img => img.id === this.state.imgId);
+  clickOnImage = e => {
+    this.setState({ showModal: true, pickedPicture: e.target });
   };
 
   render() {
-    const { status, error, data, showModal, total } = this.state;
+    const { status, error, data, showModal, total, pickedPicture } = this.state;
 
     return (
       <div className="App">
@@ -112,10 +107,7 @@ export class App extends Component {
 
         {status === 'pending' && (
           <div className={s.Watch}>
-            <Grid
-              color="#00BFFF"
-              height={80}
-              width={80} />
+            <Grid color="#00BFFF" height={80} width={80} />
           </div>
         )}
 
@@ -127,7 +119,7 @@ export class App extends Component {
 
         {showModal && (
           <Modal onClose={this.toggleModal}>
-            <img src={this.handleData().imageURL} alt={this.handleData().alt} />
+            <img src={pickedPicture.src} alt={pickedPicture.tags} />
           </Modal>
         )}
       </div>
